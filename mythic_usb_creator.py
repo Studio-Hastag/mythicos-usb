@@ -18,12 +18,7 @@ class CommandError(RuntimeError):
 
 def run_command(cmd: list[str]) -> str:
     try:
-        completed = subprocess.run(
-            cmd,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        completed = subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as exc:
         stderr = exc.stderr.strip() if exc.stderr else "Erreur inconnue"
         raise CommandError(f"Commande échouée: {' '.join(cmd)}\n{stderr}") from exc
@@ -99,8 +94,12 @@ def write_iso_to_device(iso_path: Path, device_path: str, block_size: str, sync:
         subprocess.run(["sync"], check=True)
 
 
-def command_devices(_: argparse.Namespace) -> int:
+def command_devices(args: argparse.Namespace) -> int:
     devices = list_removable_devices()
+    if args.json:
+        print(json.dumps(devices, ensure_ascii=False, indent=2))
+        return 0
+
     if not devices:
         print("Aucun périphérique USB détecté.")
         return 0
@@ -108,10 +107,7 @@ def command_devices(_: argparse.Namespace) -> int:
     print("Périphériques USB détectés:")
     for dev in devices:
         model = dev["model"] or "inconnu"
-        print(
-            f"- {dev['path']} ({dev['size']}) | modèle={model} | "
-            f"transport={dev['transport'] or 'n/a'}"
-        )
+        print(f"- {dev['path']} ({dev['size']}) | modèle={model} | transport={dev['transport'] or 'n/a'}")
     return 0
 
 
@@ -164,6 +160,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     devices_parser = subparsers.add_parser("devices", help="Lister les périphériques USB amovibles")
+    devices_parser.add_argument("--json", action="store_true", help="Sortie JSON exploitable par scripts/GUI")
     devices_parser.set_defaults(func=command_devices)
 
     verify_parser = subparsers.add_parser("verify", help="Vérifier qu'un fichier ISO est valide")
@@ -191,21 +188,17 @@ def check_dependencies(command: str) -> None:
     required = requirements.get(command, [])
     missing = [binary for binary in required if shutil.which(binary) is None]
     if missing:
-        raise EnvironmentError(
-            "Dépendances manquantes: " + ", ".join(missing) + ". Installez-les puis réessayez."
-        )
+        raise EnvironmentError("Dépendances manquantes: " + ", ".join(missing) + ". Installez-les puis réessayez.")
 
 
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-
     try:
         check_dependencies(args.command)
     except EnvironmentError as exc:
         print(str(exc), file=sys.stderr)
         return 3
-
     return args.func(args)
 
 

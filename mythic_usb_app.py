@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import json
+import shutil
 import subprocess
 import threading
 import tkinter as tk
@@ -10,29 +12,30 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 APP_TITLE = "MythicOS USB Creator"
-CLI_PATH = Path(__file__).resolve().with_name("mythic_usb_creator.py")
+LOCAL_CLI = Path(__file__).resolve().with_name("mythic_usb_creator.py")
 
 
 class MythicUsbApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title(APP_TITLE)
-        self.geometry("760x520")
-        self.minsize(700, 450)
+        self.geometry("780x560")
+        self.minsize(720, 500)
 
         self.iso_var = tk.StringVar()
         self.device_var = tk.StringVar()
         self.simulate_var = tk.BooleanVar(value=True)
         self.auto_yes_var = tk.BooleanVar(value=False)
+        self.status_var = tk.StringVar(value="Prêt")
 
         self._build_ui()
+        self.refresh_devices()
 
     def _build_ui(self) -> None:
         frame = ttk.Frame(self, padding=16)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        title = ttk.Label(frame, text=APP_TITLE, font=("TkDefaultFont", 16, "bold"))
-        title.pack(anchor="w", pady=(0, 12))
+        ttk.Label(frame, text=APP_TITLE, font=("TkDefaultFont", 16, "bold")).pack(anchor="w", pady=(0, 12))
 
         iso_frame = ttk.LabelFrame(frame, text="Image ISO")
         iso_frame.pack(fill=tk.X, pady=6)
@@ -60,7 +63,14 @@ class MythicUsbApp(tk.Tk):
         self.log_text = tk.Text(log_frame, wrap="word", height=14)
         self.log_text.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
 
-        self.refresh_devices()
+        status = ttk.Label(frame, textvariable=self.status_var)
+        status.pack(anchor="w", pady=(2, 0))
+
+    def _cli_base_cmd(self) -> list[str]:
+        installed = shutil.which("mythic-usb")
+        if installed:
+            return [installed]
+        return ["python3", str(LOCAL_CLI)]
 
     def _browse_iso(self) -> None:
         filename = filedialog.askopenfilename(
@@ -74,9 +84,13 @@ class MythicUsbApp(tk.Tk):
         self.log_text.insert(tk.END, text + "\n")
         self.log_text.see(tk.END)
 
+    def _set_status(self, text: str) -> None:
+        self.status_var.set(text)
+
     def _run_cli(self, args: list[str], success_message: str | None = None) -> None:
         def task() -> None:
-            cmd = ["python3", str(CLI_PATH), *args]
+            cmd = [*self._cli_base_cmd(), *args]
+            self.after(0, lambda: self._set_status("Exécution en cours..."))
             self.after(0, lambda: self._append_log(f"$ {' '.join(cmd)}"))
             proc = subprocess.run(cmd, capture_output=True, text=True)
             out = proc.stdout.strip()
@@ -88,21 +102,38 @@ class MythicUsbApp(tk.Tk):
 
             if proc.returncode == 0 and success_message:
                 self.after(0, lambda: messagebox.showinfo(APP_TITLE, success_message))
+                self.after(0, lambda: self._set_status("Succès"))
             elif proc.returncode != 0:
                 self.after(0, lambda: messagebox.showerror(APP_TITLE, "Opération échouée. Voir le journal."))
+                self.after(0, lambda: self._set_status("Erreur"))
+            else:
+                self.after(0, lambda: self._set_status("Prêt"))
 
         threading.Thread(target=task, daemon=True).start()
 
     def refresh_devices(self) -> None:
-        cmd = ["python3", str(CLI_PATH), "devices"]
+        cmd = [*self._cli_base_cmd(), "devices", "--json"]
         proc = subprocess.run(cmd, capture_output=True, text=True)
-        entries: list[str] = []
-        for line in proc.stdout.splitlines():
-            if line.startswith("- /dev/"):
-                entries.append(line.split(" ")[1])
-        self.device_combo["values"] = entries
-        if entries:
-            self.device_var.set(entries[0])
+        if proc.returncode != 0:
+            self._append_log(proc.stderr.strip() or "Impossible de lister les périphériques.")
+            self.device_combo["values"] = []
+            self.device_var.set("")
+            return
+
+        try:
+            devices = json.loads(proc.stdout)
+        except json.JSONDecodeError:
+            self._append_log("Réponse invalide de la commande devices --json.")
+            return
+
+        values = [dev.get("path", "") for dev in devices if dev.get("path")]
+        self.device_combo["values"] = values
+        if values:
+            self.device_var.set(values[0])
+            self._set_status(f"{len(values)} périphérique(s) détecté(s)")
+        else:
+            self.device_var.set("")
+            self._set_status("Aucun périphérique USB détecté")
 
     def verify_iso(self) -> None:
         iso = self.iso_var.get().strip()
@@ -114,15 +145,17 @@ class MythicUsbApp(tk.Tk):
     def write_iso(self) -> None:
         iso = self.iso_var.get().strip()
         device = self.device_var.get().strip()
-
         if not iso or not device:
             messagebox.showwarning(APP_TITLE, "Sélectionne une ISO et un périphérique USB.")
             return
 
-        if not messagebox.askyesno(
-            APP_TITLE,
-            f"Toutes les données de {device} seront effacées. Continuer ?",
-        ):
+        if not self.simulate_var.get() and not self.auto_yes_var.get():
+            messagebox.showinfo(
+                APP_TITLE,
+                "Astuce: active 'Confirmer automatiquement (--yes)' pour éviter le prompt CLI interactif.",
+            )
+
+        if not messagebox.askyesno(APP_TITLE, f"Toutes les données de {device} seront effacées. Continuer ?"):
             return
 
         args = ["write", iso, device]
@@ -131,7 +164,7 @@ class MythicUsbApp(tk.Tk):
         if self.auto_yes_var.get() or self.simulate_var.get():
             args.append("--yes")
 
-        self._run_cli(args, success_message="Écriture terminée.")
+        self._run_cli(args, success_message="Opération terminée.")
 
 
 def main() -> int:
