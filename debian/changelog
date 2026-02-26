@@ -1,0 +1,6 @@
+mythic-usb (0.1.0-1) unstable; urgency=medium
+
+  * Initial Debian source package.
+  * Package the mythic-usb CLI and documentation.
+
+ -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 00:00:00 +0000

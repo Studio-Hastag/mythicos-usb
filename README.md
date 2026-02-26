@@ -42,6 +42,28 @@ sudo ./mythic_usb_creator.py write /chemin/MythicOS.iso /dev/sdX
 sudo ./mythic_usb_creator.py write ./MythicOS.iso /dev/sdb --yes
 ```
 
+## Paquet Debian source
+
+Le dépôt inclut maintenant un empaquetage Debian source complet dans `debian/`.
+
+### Construire le paquet source
+
+```bash
+dpkg-buildpackage -S -us -uc
+```
+
+### Construire le paquet binaire local
+
+```bash
+dpkg-buildpackage -b -us -uc
+```
+
+Le binaire installe la commande sous:
+
+```bash
+/usr/bin/mythic-usb
+```
+
 ## Conseils de sécurité
 
 - Vérifie toujours le bon périphérique (`/dev/sdb`, `/dev/sdc`, etc.) avant écriture.
