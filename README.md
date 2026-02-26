@@ -1,50 +1,44 @@
 # MythicOS USB Creator
 
-Un utilitaire en ligne de commande pour créer une clé USB bootable MythicOS, inspiré de l'approche de Rufus (détection de clé + écriture d'ISO).
+Application pour créer une clé USB bootable MythicOS, inspirée de l'approche Rufus.
 
-## Fonctionnalités
+## Ce qui est inclus
+
+- **CLI**: `mythic-usb` (detection, verify, write)
+- **GUI lançable**: `mythic-usb-gui` (interface Tkinter)
+- **Icône d'application** installée dans le thème `hicolor`
+- **Entrée desktop**: "MythicOS USB Creator"
+- **Paquet Debian source complet** dans `debian/`
+
+## Fonctionnalités CLI
 
 - Détection des périphériques USB amovibles (`devices`)
 - Vérification d'une image ISO (`verify`)
 - Écriture de l'ISO sur une clé USB (`write`)
 - Mode simulation pour tester la commande sans toucher au disque
 
-## Prérequis
-
-- Linux
-- Python 3.10+
-- Outils système: `lsblk`, `file`, `dd`, `umount`, `sync`
-
-## Utilisation rapide
+## Utilisation rapide CLI
 
 ```bash
-# 1) Voir les clés USB détectées
-./mythic_usb_creator.py devices
+# Lister les clés USB détectées
+mythic-usb devices
 
-# 2) Vérifier l'ISO MythicOS
-./mythic_usb_creator.py verify /chemin/MythicOS.iso
+# Vérifier une ISO MythicOS
+mythic-usb verify /chemin/MythicOS.iso
 
-# 3) Écrire l'ISO (⚠️ efface la clé)
-sudo ./mythic_usb_creator.py write /chemin/MythicOS.iso /dev/sdX
+# Écrire l'ISO (⚠️ efface la clé)
+sudo mythic-usb write /chemin/MythicOS.iso /dev/sdX
 ```
 
-## Exemples
-
-### Simulation (sans écriture)
+## Utilisation GUI
 
 ```bash
-./mythic_usb_creator.py write ./MythicOS.iso /dev/sdb --simulate --yes
+mythic-usb-gui
 ```
 
-### Écriture réelle avec confirmation automatique
+Ou via le menu d'applications avec l'icône **MythicOS USB Creator**.
 
-```bash
-sudo ./mythic_usb_creator.py write ./MythicOS.iso /dev/sdb --yes
-```
-
-## Paquet Debian source
-
-Le dépôt inclut maintenant un empaquetage Debian source complet dans `debian/`.
+## Build Debian
 
 ### Construire le paquet source
 
@@ -58,27 +52,15 @@ dpkg-buildpackage -S -us -uc
 dpkg-buildpackage -b -us -uc
 ```
 
-Le binaire installe la commande sous:
+Le paquet installe:
 
-```bash
-/usr/bin/mythic-usb
-```
+- `/usr/bin/mythic-usb`
+- `/usr/bin/mythic-usb-gui`
+- `/usr/share/applications/mythic-usb.desktop`
+- `/usr/share/icons/hicolor/scalable/apps/mythic-usb.svg`
 
 ## Conseils de sécurité
 
 - Vérifie toujours le bon périphérique (`/dev/sdb`, `/dev/sdc`, etc.) avant écriture.
 - N'utilise jamais le disque système (`/dev/sda`) comme destination.
 - Fais une sauvegarde des données de la clé avant d'écrire l'image.
-
-## Limites actuelles
-
-- Outil CLI uniquement (pas encore d'interface graphique).
-- Écriture brute via `dd` (comme beaucoup d'outils Linux classiques).
-- Le script suppose une ISO hybride/bootable standard.
-
-## Idées d'amélioration
-
-- Interface graphique (GTK/Qt) style Rufus.
-- Vérification de checksum SHA256 des ISO.
-- Téléchargement automatique des versions MythicOS.
-- Journal d'installation détaillé.

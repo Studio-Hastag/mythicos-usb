@@ -1,6 +1,7 @@
-mythic-usb (0.1.0-1) unstable; urgency=medium
+mythic-usb (0.2.0-1) unstable; urgency=medium
 
-  * Initial Debian source package.
-  * Package the mythic-usb CLI and documentation.
+  * Rework into a complete Debian package.
+  * Add launchable GUI app with desktop entry and icon.
+  * Keep CLI utility and install both launchers.
 
- -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 00:00:00 +0000
+ -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 00:30:00 +0000

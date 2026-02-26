@@ -15,14 +15,15 @@ Architecture: all
 Depends:
  ${misc:Depends},
  python3,
+ python3-tk,
  util-linux,
  file,
  coreutils,
  mount
-Description: Créateur de clé USB bootable pour MythicOS
- Outil en ligne de commande inspiré de Rufus pour Linux.
+Description: Application MythicOS pour créer des clés USB bootables
+ Application CLI et graphique inspirée de Rufus pour Linux.
  .
- Il permet de:
+ Elle permet de:
   - détecter les périphériques amovibles USB,
   - vérifier qu'une image ISO est valide,
   - écrire une ISO sur une clé USB avec confirmations de sécurité.
