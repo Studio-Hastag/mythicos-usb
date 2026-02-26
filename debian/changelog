@@ -1,0 +1,7 @@
+mythic-usb (0.2.0-3) unstable; urgency=medium
+
+  * Improve GUI reliability and usability.
+  * Add machine-readable `devices --json` for the GUI.
+  * Make GUI prefer installed `mythic-usb` command and fallback to local script.
+
+ -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 01:30:00 +0000
