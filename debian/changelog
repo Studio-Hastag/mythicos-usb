@@ -1,7 +1,6 @@
-mythic-usb (0.2.0-1) unstable; urgency=medium
+mythic-usb (0.2.0-2) unstable; urgency=medium
 
-  * Rework into a complete Debian package.
-  * Add launchable GUI app with desktop entry and icon.
-  * Keep CLI utility and install both launchers.
+  * Switch packaging install logic to debian/install.
+  * Simplify debian/rules to standard dh sequence.
 
- -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 00:30:00 +0000
+ -- MythicOS Team <maintainers@mythicos.local>  Thu, 27 Feb 2026 01:00:00 +0000

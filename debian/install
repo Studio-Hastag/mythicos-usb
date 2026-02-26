@@ -1,0 +1,7 @@
+mythic_usb_creator.py usr/lib/mythic-usb/
+mythic_usb_app.py usr/lib/mythic-usb/
+debian/bin/mythic-usb usr/bin/
+debian/bin/mythic-usb-gui usr/bin/
+README.md usr/share/doc/mythic-usb/
+mythic-usb.desktop usr/share/applications/
+assets/mythic-usb.svg usr/share/icons/hicolor/scalable/apps/

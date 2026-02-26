@@ -64,3 +64,7 @@ Le paquet installe:
 - Vérifie toujours le bon périphérique (`/dev/sdb`, `/dev/sdc`, etc.) avant écriture.
 - N'utilise jamais le disque système (`/dev/sda`) comme destination.
 - Fais une sauvegarde des données de la clé avant d'écrire l'image.
+
+## Détails packaging Debian
+
+Le packaging utilise désormais `debian/install` pour déclarer tous les fichiers installés par `dh_install` (CLI, GUI, icône, desktop entry, documentation).
