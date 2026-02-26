@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# No build step required.
+
+
+override_dh_auto_install:
+	install -D -m 0755 mythic_usb_creator.py debian/mythic-usb/usr/lib/mythic-usb/mythic_usb_creator.py
+	install -D -m 0755 mythic_usb_app.py debian/mythic-usb/usr/lib/mythic-usb/mythic_usb_app.py
+	install -D -m 0755 debian/bin/mythic-usb debian/mythic-usb/usr/bin/mythic-usb
+	install -D -m 0755 debian/bin/mythic-usb-gui debian/mythic-usb/usr/bin/mythic-usb-gui
+	install -D -m 0644 README.md debian/mythic-usb/usr/share/doc/mythic-usb/README.md
+	install -D -m 0644 mythic-usb.desktop debian/mythic-usb/usr/share/applications/mythic-usb.desktop
+	install -D -m 0644 assets/mythic-usb.svg debian/mythic-usb/usr/share/icons/hicolor/scalable/apps/mythic-usb.svg

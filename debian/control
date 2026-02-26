@@ -1,0 +1,29 @@
+Source: mythic-usb
+Section: utils
+Priority: optional
+Maintainer: MythicOS Team <maintainers@mythicos.local>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ python3
+Standards-Version: 4.7.0
+Homepage: https://example.com/mythic-os
+Rules-Requires-Root: no
+
+Package: mythic-usb
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3,
+ python3-tk,
+ util-linux,
+ file,
+ coreutils,
+ mount
+Description: Application MythicOS pour créer des clés USB bootables
+ Application CLI et graphique inspirée de Rufus pour Linux.
+ .
+ Elle permet de:
+  - détecter les périphériques amovibles USB,
+  - vérifier qu'une image ISO est valide,
+  - écrire une ISO sur une clé USB avec confirmations de sécurité.
