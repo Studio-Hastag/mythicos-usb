@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# No build step required for this Python CLI script.
+
+
+override_dh_auto_install:
+	install -D -m 0755 mythic_usb_creator.py debian/mythic-usb/usr/bin/mythic-usb
+	install -D -m 0644 README.md debian/mythic-usb/usr/share/doc/mythic-usb/README.md
