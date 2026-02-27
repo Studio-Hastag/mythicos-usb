@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=MythicOS USB Creator
+GenericName=USB Boot Creator
+GenericName[fr]=Créateur de clé USB bootable
+Comment=Créer une clé USB bootable MythicOS
+Comment[fr]=Créer une clé USB bootable MythicOS
+Exec=mythic-usb-gui
+TryExec=mythic-usb-gui
+Icon=mythic-usb
+Terminal=false
+Categories=Utility;System;
+Keywords=usb;iso;mythic;rufus;boot;
+StartupNotify=true

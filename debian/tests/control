@@ -1,0 +1,7 @@
+Tests: cli-help
+Depends: @, python3
+Restrictions: superficial
+
+Tests: desktop-entry
+Depends: @, desktop-file-utils
+Restrictions: superficial

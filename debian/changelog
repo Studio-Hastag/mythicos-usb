@@ -1,0 +1,9 @@
+mythic-usb (1.0.0-1) unstable; urgency=medium
+
+  * First publishable release.
+  * Deliver working CLI + GUI app with desktop integration.
+  * Add reliable GUI/CLI integration via `devices --json`.
+  * Add autopkgtest smoke tests for CLI and desktop entry.
+  * Polish metadata for distribution.
+
+ -- MythicOS Maintainers <maintainers@mythic-os.org>  Thu, 27 Feb 2026 02:00:00 +0000

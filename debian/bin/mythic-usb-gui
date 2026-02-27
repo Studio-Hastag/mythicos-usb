@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/lib/mythic-usb/mythic_usb_app.py "$@"
